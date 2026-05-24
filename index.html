@@ -1,0 +1,1683 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Click to Cloud: Full Stack Link Journey</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #081013;
+      --panel: #111b20;
+      --panel-2: #17262c;
+      --ink: #eef7f4;
+      --muted: #9fb2b0;
+      --line: #2e4449;
+      --aqua: #4fe3c1;
+      --blue: #66a6ff;
+      --amber: #f5c56b;
+      --rose: #ff7e90;
+      --green: #8de37a;
+      --violet: #b899ff;
+      --shadow: 0 18px 60px rgba(0, 0, 0, .36);
+      --radius: 8px;
+      --focus: 0 0 0 3px rgba(79, 227, 193, .28);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        linear-gradient(120deg, rgba(102, 166, 255, .08), transparent 42%),
+        linear-gradient(280deg, rgba(245, 197, 107, .08), transparent 35%),
+        var(--bg);
+      color: var(--ink);
+    }
+
+    body {
+      overflow-x: hidden;
+    }
+
+    button,
+    a {
+      font: inherit;
+    }
+
+    button:focus-visible,
+    a:focus-visible,
+    input:focus-visible {
+      outline: none;
+      box-shadow: var(--focus);
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+
+    header {
+      padding: 18px clamp(16px, 4vw, 42px);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, .08);
+      background: rgba(8, 16, 19, .78);
+      backdrop-filter: blur(18px);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .brand {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .mark {
+      width: 42px;
+      height: 42px;
+      border: 1px solid rgba(255, 255, 255, .14);
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background:
+        linear-gradient(135deg, rgba(79, 227, 193, .22), rgba(102, 166, 255, .08)),
+        #0c171b;
+      position: relative;
+      overflow: hidden;
+      flex: 0 0 auto;
+    }
+
+    .mark svg {
+      width: 25px;
+      height: 25px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(22px, 4vw, 42px);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin: 6px 0 0;
+      color: var(--muted);
+      line-height: 1.45;
+      max-width: 920px;
+      font-size: 15px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .icon-btn,
+    .text-btn,
+    .link-button {
+      min-height: 40px;
+      border: 1px solid rgba(255, 255, 255, .12);
+      background: #142126;
+      color: var(--ink);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+    }
+
+    .icon-btn {
+      width: 42px;
+      display: inline-grid;
+      place-items: center;
+      padding: 0;
+    }
+
+    .icon-btn svg,
+    .text-btn svg,
+    .link-button svg,
+    .demo-link svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .text-btn,
+    .link-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 14px;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .icon-btn:hover,
+    .text-btn:hover,
+    .link-button:hover {
+      transform: translateY(-1px);
+      border-color: rgba(79, 227, 193, .5);
+      background: #192c31;
+    }
+
+    main {
+      padding: clamp(16px, 3vw, 34px);
+      display: grid;
+      gap: 18px;
+      align-content: start;
+    }
+
+    .stage {
+      display: grid;
+      grid-template-columns: minmax(290px, 380px) minmax(0, 1fr);
+      gap: 18px;
+      min-height: 650px;
+    }
+
+    .browser-surface,
+    .journey-surface {
+      border: 1px solid rgba(255, 255, 255, .1);
+      background: rgba(17, 27, 32, .88);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+      overflow: hidden;
+      min-width: 0;
+    }
+
+    .browser-surface {
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    .window-bar {
+      min-height: 45px;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: center;
+      gap: 12px;
+      padding: 0 14px;
+      background: #0f191d;
+      border-bottom: 1px solid rgba(255, 255, 255, .08);
+    }
+
+    .traffic {
+      display: flex;
+      gap: 7px;
+    }
+
+    .dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: var(--rose);
+    }
+
+    .dot:nth-child(2) {
+      background: var(--amber);
+    }
+
+    .dot:nth-child(3) {
+      background: var(--green);
+    }
+
+    .address {
+      min-width: 0;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 10px;
+      border: 1px solid rgba(255, 255, 255, .1);
+      background: #0a1215;
+      color: var(--muted);
+      border-radius: 999px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .page {
+      padding: 18px;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 18px;
+      background:
+        linear-gradient(180deg, rgba(238, 247, 244, .03), transparent 45%),
+        #132126;
+    }
+
+    .article {
+      display: grid;
+      gap: 16px;
+      align-content: start;
+    }
+
+    .article h2 {
+      margin: 0;
+      font-size: clamp(28px, 6vw, 52px);
+      line-height: .98;
+      letter-spacing: 0;
+    }
+
+    .article p {
+      margin: 0;
+      color: #c8d8d5;
+      line-height: 1.55;
+      font-size: 15px;
+    }
+
+    .demo-link {
+      justify-self: start;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: #061413;
+      background: var(--aqua);
+      padding: 12px 15px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 800;
+      border: 0;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .demo-link::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(100deg, transparent, rgba(255,255,255,.6), transparent);
+      transform: translateX(-120%);
+      animation: shine 2.8s ease-in-out infinite;
+    }
+
+    @keyframes shine {
+      42%, 100% { transform: translateX(120%); }
+    }
+
+    .mouse-lab {
+      align-self: end;
+      min-height: 220px;
+      border: 1px solid rgba(255, 255, 255, .08);
+      background: #0d171b;
+      border-radius: var(--radius);
+      padding: 16px;
+      display: grid;
+      grid-template-columns: 1fr;
+      align-items: end;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .desk-line {
+      height: 3px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.22), transparent);
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      bottom: 45px;
+    }
+
+    .mouse {
+      width: 92px;
+      height: 135px;
+      border: 2px solid rgba(255,255,255,.22);
+      background:
+        linear-gradient(90deg, transparent 48%, rgba(255,255,255,.18) 49%, rgba(255,255,255,.18) 51%, transparent 52%),
+        linear-gradient(180deg, #24363d, #121e23);
+      border-radius: 48px 48px 38px 38px;
+      justify-self: center;
+      margin-bottom: 20px;
+      position: relative;
+      transform-origin: 50% 70%;
+    }
+
+    .mouse::before {
+      content: "";
+      position: absolute;
+      top: 18px;
+      left: 50%;
+      width: 14px;
+      height: 27px;
+      transform: translateX(-50%);
+      border-radius: 999px;
+      background: var(--aqua);
+      opacity: .8;
+    }
+
+    .mouse::after {
+      content: "";
+      position: absolute;
+      top: -76px;
+      left: 50%;
+      width: 3px;
+      height: 80px;
+      background: linear-gradient(180deg, transparent, rgba(79,227,193,.75));
+    }
+
+    .usb-label {
+      position: absolute;
+      left: 16px;
+      bottom: 15px;
+      color: var(--muted);
+      font-size: 12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .bit-stream {
+      position: absolute;
+      right: 14px;
+      bottom: 15px;
+      display: flex;
+      gap: 4px;
+      color: var(--aqua);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      opacity: .55;
+    }
+
+    .bit-stream span {
+      transform: translateY(0);
+    }
+
+    .journey-surface {
+      position: relative;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+    }
+
+    .control-bar {
+      min-height: 56px;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      padding: 10px 14px;
+      background: rgba(10, 18, 21, .72);
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+
+    .transport {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .step-readout {
+      min-width: 0;
+      display: grid;
+      gap: 3px;
+    }
+
+    .step-readout strong {
+      font-size: 14px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .step-readout span {
+      color: var(--muted);
+      font-size: 12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .speed {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    input[type="range"] {
+      accent-color: var(--aqua);
+      width: 90px;
+    }
+
+    .map {
+      min-height: 0;
+      padding: 18px;
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+      gap: 16px;
+      position: relative;
+    }
+
+    .layers {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: repeat(6, minmax(128px, 1fr));
+      gap: 10px;
+      align-items: stretch;
+      position: relative;
+    }
+
+    .lane {
+      border: 1px solid rgba(255,255,255,.09);
+      background: rgba(13, 23, 27, .72);
+      border-radius: var(--radius);
+      padding: 12px;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 10px;
+      min-width: 0;
+      transition: border-color .25s ease, background .25s ease, transform .25s ease;
+    }
+
+    .lane.is-live {
+      border-color: color-mix(in srgb, var(--lane-color), white 18%);
+      background: color-mix(in srgb, var(--lane-color) 16%, #0d171b);
+      transform: translateY(-2px);
+    }
+
+    .lane h3 {
+      margin: 0;
+      font-size: 13px;
+      color: var(--lane-color);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .lane h3 span {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 18px currentColor;
+      flex: 0 0 auto;
+    }
+
+    .node-stack {
+      display: grid;
+      gap: 9px;
+      align-content: start;
+    }
+
+    .node {
+      min-height: 48px;
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.035);
+      border-radius: 8px;
+      padding: 9px;
+      display: grid;
+      gap: 3px;
+      position: relative;
+      overflow: hidden;
+      transition: transform .25s ease, border-color .25s ease, background .25s ease;
+    }
+
+    .node b {
+      font-size: 12px;
+      line-height: 1.2;
+    }
+
+    .node span {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.25;
+    }
+
+    .node.is-active {
+      border-color: color-mix(in srgb, var(--lane-color), white 30%);
+      background: color-mix(in srgb, var(--lane-color) 20%, transparent);
+      transform: translateY(-2px) scale(1.015);
+    }
+
+    .node.is-active::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      border: 1px solid color-mix(in srgb, var(--lane-color), white 30%);
+      animation: pulse-ring .9s ease-out both;
+      pointer-events: none;
+    }
+
+    @keyframes pulse-ring {
+      from { transform: scale(.98); opacity: .9; }
+      to { transform: scale(1.08); opacity: 0; }
+    }
+
+    .flight-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .packet {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--aqua);
+      box-shadow: 0 0 0 7px rgba(79,227,193,.12), 0 0 26px rgba(79,227,193,.8);
+      position: absolute;
+      left: var(--x, 20%);
+      top: var(--y, 50%);
+      transform: translate(-50%, -50%) scale(.4);
+      opacity: 0;
+    }
+
+    .packet.is-live {
+      animation: packet-pop .7s cubic-bezier(.2, 1.5, .3, 1) both;
+    }
+
+    @keyframes packet-pop {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(.2); }
+      32% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+      100% { opacity: .95; transform: translate(-50%, -50%) scale(1); }
+    }
+
+    .explain {
+      position: absolute;
+      max-width: min(390px, calc(100vw - 44px));
+      left: var(--pop-x, 50%);
+      top: var(--pop-y, 48%);
+      transform: translate(-50%, -50%);
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(8, 16, 19, .94);
+      backdrop-filter: blur(18px);
+      border-radius: var(--radius);
+      padding: 14px;
+      box-shadow: var(--shadow);
+      z-index: 5;
+      display: grid;
+      gap: 9px;
+      opacity: 0;
+      pointer-events: none;
+      max-height: min(520px, calc(100vh - 96px));
+      overflow-y: auto;
+    }
+
+    .explain.is-live {
+      animation: pop-in .3s ease both;
+    }
+
+    @keyframes pop-in {
+      from { opacity: 0; transform: translate(-50%, calc(-50% + 10px)) scale(.98); }
+      to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    }
+
+    .explain-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 0 8px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--accent, var(--aqua)) 22%, transparent);
+      color: color-mix(in srgb, var(--accent, var(--aqua)), white 22%);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    .explain h4 {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.2;
+    }
+
+    .explain p {
+      margin: 0;
+      color: #c9d8d5;
+      line-height: 1.5;
+      font-size: 13px;
+    }
+
+    .event-list {
+      display: grid;
+      gap: 5px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .event-list li {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+      padding-left: 14px;
+      position: relative;
+    }
+
+    .event-list li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: .55em;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--accent, var(--aqua));
+    }
+
+    .oss-card {
+      border: 1px solid rgba(255,255,255,.1);
+      background: rgba(255,255,255,.04);
+      border-radius: 8px;
+      padding: 10px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .oss-card a {
+      color: var(--ink);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      font-weight: 800;
+      width: fit-content;
+    }
+
+    .oss-card a:hover {
+      color: color-mix(in srgb, var(--accent, var(--aqua)), white 18%);
+    }
+
+    .oss-card a svg {
+      width: 15px;
+      height: 15px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .oss-label {
+      color: color-mix(in srgb, var(--accent, var(--aqua)), white 12%);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+    }
+
+    .timeline {
+      border: 1px solid rgba(255,255,255,.09);
+      background: rgba(9, 17, 20, .86);
+      border-radius: var(--radius);
+      padding: 12px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .rail {
+      height: 12px;
+      border-radius: 999px;
+      background: #1c2d32;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .rail-fill {
+      height: 100%;
+      width: var(--progress, 0%);
+      background: linear-gradient(90deg, var(--aqua), var(--blue), var(--amber), var(--rose));
+      border-radius: inherit;
+      transition: width .28s ease;
+    }
+
+    .ticks {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(42px, 1fr));
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+
+    .tick {
+      min-height: 58px;
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.03);
+      border-radius: 8px;
+      padding: 8px;
+      display: grid;
+      align-content: center;
+      gap: 2px;
+      color: var(--muted);
+      cursor: pointer;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease, color .18s ease;
+    }
+
+    .tick:hover,
+    .tick.is-current {
+      transform: translateY(-1px);
+      border-color: color-mix(in srgb, var(--accent), white 18%);
+      color: var(--ink);
+      background: color-mix(in srgb, var(--accent) 13%, transparent);
+    }
+
+    .tick b {
+      font-size: 11px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .tick span {
+      font-size: 10px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .closing {
+      display: none;
+      border: 1px solid rgba(255,255,255,.12);
+      background:
+        linear-gradient(120deg, rgba(79, 227, 193, .16), transparent 38%),
+        linear-gradient(280deg, rgba(255, 126, 144, .14), transparent 42%),
+        #101c21;
+      border-radius: var(--radius);
+      padding: clamp(20px, 4vw, 34px);
+      box-shadow: var(--shadow);
+      align-items: center;
+      gap: 16px;
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .closing.is-visible {
+      display: grid;
+      animation: pop-in-final .45s ease both;
+    }
+
+    @keyframes pop-in-final {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .closing h2 {
+      margin: 0;
+      font-size: clamp(24px, 4vw, 46px);
+      line-height: 1.04;
+      letter-spacing: 0;
+    }
+
+    .closing p {
+      margin: 9px 0 0;
+      color: #cfe0dc;
+      line-height: 1.55;
+      max-width: 820px;
+    }
+
+    .source-map {
+      width: min(245px, 28vw);
+      min-width: 180px;
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+    }
+
+    .source-map svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    @media (max-width: 1050px) {
+      header,
+      .control-bar,
+      .closing {
+        grid-template-columns: 1fr;
+      }
+
+      .header-actions,
+      .speed {
+        justify-content: start;
+      }
+
+      .stage {
+        grid-template-columns: 1fr;
+      }
+
+      .layers {
+        grid-template-columns: repeat(3, minmax(128px, 1fr));
+      }
+
+      .browser-surface {
+        min-height: 520px;
+      }
+    }
+
+    @media (max-width: 700px) {
+      main {
+        padding: 12px;
+      }
+
+      .brand {
+        align-items: start;
+      }
+
+      .layers {
+        grid-template-columns: 1fr;
+      }
+
+      .lane {
+        min-height: auto;
+      }
+
+      .control-bar {
+        align-items: stretch;
+      }
+
+      .transport,
+      .header-actions {
+        overflow-x: auto;
+        padding-bottom: 2px;
+      }
+
+      .closing {
+        padding: 18px;
+      }
+
+      .source-map {
+        width: 180px;
+        justify-self: start;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <div class="mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 2v10"></path>
+            <path d="M8 6l4-4 4 4"></path>
+            <path d="M5 12h14"></path>
+            <path d="M7 12v5a3 3 0 0 0 3 3h4a3 3 0 0 0 3-3v-5"></path>
+          </svg>
+        </div>
+        <div>
+          <h1>Click to Cloud</h1>
+          <p class="subtitle">A tech-focused, animated walk through what happens after a USB mouse click on a web link, from hardware interrupt to kernel, browser, DNS, OSI layers, servers, rendering, and open source contribution points.</p>
+        </div>
+      </div>
+      <div class="header-actions" aria-label="App actions">
+        <button class="text-btn" id="startBtn" type="button" title="Start the journey">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg>
+          Start
+        </button>
+        <button class="text-btn" id="allBtn" type="button" title="Show all components">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16"></path><path d="M4 12h16"></path><path d="M4 19h16"></path></svg>
+          Map
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <section class="stage" aria-label="Interactive link journey">
+        <aside class="browser-surface" aria-label="Starting webpage">
+          <div class="window-bar">
+            <div class="traffic" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+            <div class="address"><span aria-hidden="true">https://example.dev/articles/open-stack</span></div>
+          </div>
+          <div class="page">
+            <article class="article">
+              <h2>A link is a full-stack event.</h2>
+              <p>You see one click. The machine sees HID reports, interrupts, schedulers, browser event dispatch, protocol machinery, cryptography, routing, distributed systems, parsers, layout engines, GPU commands, and a social layer of people maintaining it all.</p>
+              <button class="demo-link" id="demoLink" type="button">
+                Open the request path
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path><path d="M13 6l6 6-6 6"></path></svg>
+              </button>
+            </article>
+            <div class="mouse-lab" aria-label="USB mouse visualization">
+              <div class="mouse" id="mouseVisual" aria-hidden="true"></div>
+              <div class="desk-line" aria-hidden="true"></div>
+              <div class="usb-label">USB HID report: button=1 dx=0 dy=0</div>
+              <div class="bit-stream" aria-hidden="true"><span>1</span><span>0</span><span>1</span><span>1</span><span>0</span><span>0</span><span>1</span><span>0</span></div>
+            </div>
+          </div>
+        </aside>
+
+        <section class="journey-surface" aria-label="System journey map">
+          <div class="control-bar">
+            <div class="transport" aria-label="Playback controls">
+              <button class="icon-btn" id="prevBtn" type="button" title="Previous step">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 20L9 12l10-8v16z"></path><path d="M5 19V5"></path></svg>
+              </button>
+              <button class="icon-btn" id="playBtn" type="button" title="Play or pause">
+                <svg id="playIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg>
+              </button>
+              <button class="icon-btn" id="nextBtn" type="button" title="Next step">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4l10 8-10 8V4z"></path><path d="M19 5v14"></path></svg>
+              </button>
+              <button class="icon-btn" id="resetBtn" type="button" title="Reset">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"></path><path d="M3 3v6h6"></path></svg>
+              </button>
+            </div>
+            <div class="step-readout" aria-live="polite">
+              <strong id="readoutTitle">Ready at the link</strong>
+              <span id="readoutMeta">Click the link to emit the first input event.</span>
+            </div>
+            <label class="speed" for="speedRange">
+              Speed
+              <input id="speedRange" type="range" min="500" max="2800" value="1450" step="50">
+            </label>
+          </div>
+
+          <div class="map" id="map">
+            <div class="layers" id="layers"></div>
+            <div class="flight-layer" aria-hidden="true">
+              <div class="packet" id="packet"></div>
+            </div>
+            <div class="explain" id="explain" role="status" aria-live="polite">
+              <div class="explain-top">
+                <span class="badge" id="badge">step 00</span>
+                <span class="badge" id="osiBadge">OSI</span>
+              </div>
+              <h4 id="explainTitle">Click the link</h4>
+              <p id="explainText">The map will follow the request through the stack.</p>
+              <ul class="event-list" id="eventList"></ul>
+              <div class="oss-card" id="ossCard">
+                <span class="oss-label">Open source entry point</span>
+                <a id="projectLink" href="https://www.kernel.org/" target="_blank" rel="noopener noreferrer">
+                  <span id="projectName">Linux kernel</span>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7"></path><path d="M8 7h9v9"></path></svg>
+                </a>
+                <ul class="event-list" id="ideaList"></ul>
+              </div>
+            </div>
+            <div class="timeline" aria-label="Global timeline">
+              <div class="rail"><div class="rail-fill" id="railFill"></div></div>
+              <div class="ticks" id="ticks"></div>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <section class="closing" id="closing" aria-label="Open source closing message">
+        <div>
+          <h2>When you do open source, you can work on any and all level, at your level.</h2>
+          <p>Pick the layer that feels reachable today: a driver bug, a browser issue, a DNS library, a TLS implementation, a docs patch, a test case, a design review, or a reproducible report. The stack is huge, but contribution is local.</p>
+        </div>
+        <div class="source-map" aria-hidden="true">
+          <svg viewBox="0 0 240 240">
+            <defs>
+              <linearGradient id="sourceGlow" x1="0" x2="1">
+                <stop offset="0" stop-color="#4fe3c1"></stop>
+                <stop offset=".55" stop-color="#66a6ff"></stop>
+                <stop offset="1" stop-color="#f5c56b"></stop>
+              </linearGradient>
+            </defs>
+            <circle cx="120" cy="120" r="84" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="2"></circle>
+            <path d="M70 120h100M120 70v100M88 88l64 64M152 88l-64 64" stroke="url(#sourceGlow)" stroke-width="7" stroke-linecap="round"></path>
+            <circle cx="120" cy="120" r="18" fill="#4fe3c1"></circle>
+            <circle cx="70" cy="120" r="12" fill="#66a6ff"></circle>
+            <circle cx="170" cy="120" r="12" fill="#f5c56b"></circle>
+            <circle cx="120" cy="70" r="12" fill="#ff7e90"></circle>
+            <circle cx="120" cy="170" r="12" fill="#8de37a"></circle>
+            <circle cx="88" cy="88" r="10" fill="#b899ff"></circle>
+            <circle cx="152" cy="152" r="10" fill="#4fe3c1"></circle>
+            <circle cx="152" cy="88" r="10" fill="#66a6ff"></circle>
+            <circle cx="88" cy="152" r="10" fill="#f5c56b"></circle>
+          </svg>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const lanes = [
+      {
+        id: "human",
+        title: "Human + USB",
+        color: "#4fe3c1",
+        nodes: [
+          ["Finger", "mechanical switch closes"],
+          ["USB mouse", "HID report over bus"],
+          ["Host controller", "xHCI polls endpoint"]
+        ]
+      },
+      {
+        id: "kernel",
+        title: "Kernel",
+        color: "#66a6ff",
+        nodes: [
+          ["Interrupt", "IRQ / MSI-X"],
+          ["HID driver", "decode usage page"],
+          ["Input subsystem", "event queue"],
+          ["Scheduler", "wake browser thread"]
+        ]
+      },
+      {
+        id: "browser",
+        title: "Browser + OS",
+        color: "#f5c56b",
+        nodes: [
+          ["Compositor", "hit-test surface"],
+          ["DOM event", "pointerup / click"],
+          ["URL parser", "scheme host path"],
+          ["Cache policy", "freshness / revalidate"]
+        ]
+      },
+      {
+        id: "network",
+        title: "Network Stack",
+        color: "#ff7e90",
+        nodes: [
+          ["DNS resolver", "stub to recursive"],
+          ["Socket API", "connect()"],
+          ["TCP + TLS", "transport and crypto"],
+          ["HTTP", "request framing"]
+        ]
+      },
+      {
+        id: "internet",
+        title: "Internet + Server",
+        color: "#8de37a",
+        nodes: [
+          ["NIC / Wi-Fi", "frames on the medium"],
+          ["Routers", "BGP-shaped path"],
+          ["Edge / CDN", "terminate near user"],
+          ["App server", "route and compute"]
+        ]
+      },
+      {
+        id: "return",
+        title: "Return + Render",
+        color: "#b899ff",
+        nodes: [
+          ["Response", "status headers body"],
+          ["HTML parser", "tokens to DOM"],
+          ["CSS / JS", "style and execute"],
+          ["GPU", "paint and present"]
+        ]
+      }
+    ];
+
+    const steps = [
+      {
+        lane: "human",
+        node: "Finger",
+        osi: "Physical human",
+        title: "The click begins as physics",
+        text: "The finger depresses the left mouse button. A switch changes electrical state; debouncing circuitry and firmware turn noisy contact into a clean input state.",
+        events: ["Mechanical contact closes", "Mouse MCU samples the button matrix", "Firmware prepares a HID report"]
+      },
+      {
+        lane: "human",
+        node: "USB mouse",
+        osi: "USB HID",
+        title: "USB HID encodes the action",
+        text: "The device reports button state through the Human Interface Device protocol. For USB full/low-speed devices, the host polls interrupt endpoints on a schedule.",
+        events: ["Report descriptor defines fields", "Button bit flips to 1", "Endpoint has data for host"]
+      },
+      {
+        lane: "human",
+        node: "Host controller",
+        osi: "Bus controller",
+        title: "The host controller moves bytes",
+        text: "The xHCI/EHCI host controller DMA-writes transfer results into memory and notifies the CPU. Hardware is already collaborating with kernel-owned queues.",
+        events: ["Transfer descriptor completes", "DMA lands in system memory", "Completion event is queued"]
+      },
+      {
+        lane: "kernel",
+        node: "Interrupt",
+        osi: "Kernel IRQ",
+        title: "The CPU enters interrupt handling",
+        text: "An interrupt or MSI-X message shifts attention to the kernel. The top half acknowledges hardware quickly; deferred work handles the heavier parsing.",
+        events: ["Interrupt vector fires", "Kernel acknowledges controller", "Work is deferred to a safer context"]
+      },
+      {
+        lane: "kernel",
+        node: "HID driver",
+        osi: "Device driver",
+        title: "The HID driver decodes semantics",
+        text: "The driver interprets raw HID fields: usage page, usage ID, button state, relative motion. Generic input is converted into OS-native events.",
+        events: ["HID report parsed", "Usage maps to BTN_LEFT", "Timestamped input event emitted"]
+      },
+      {
+        lane: "kernel",
+        node: "Input subsystem",
+        osi: "OS event queue",
+        title: "The OS queues input",
+        text: "The kernel input subsystem publishes events to user space through platform paths such as evdev, IOKit, or Windows Raw Input. Windowing layers preserve ordering.",
+        events: ["Button down/up sequence recorded", "Window server receives pointer state", "Focused surface is identified"]
+      },
+      {
+        lane: "kernel",
+        node: "Scheduler",
+        osi: "Process runtime",
+        title: "The browser gets CPU time",
+        text: "The scheduler wakes the browser or compositor process. Locks, event queues, and priority decisions decide how quickly the click reaches application code.",
+        events: ["Thread transitions runnable", "Event loop is nudged", "Compositor and main thread coordinate"]
+      },
+      {
+        lane: "browser",
+        node: "Compositor",
+        osi: "GUI stack",
+        title: "Hit testing finds the link",
+        text: "The compositor maps pointer coordinates into layers, transforms, and display lists. It resolves that the target under the cursor is an anchor-like control.",
+        events: ["Device pixels map to CSS pixels", "Layer tree is hit-tested", "Target element is selected"]
+      },
+      {
+        lane: "browser",
+        node: "DOM event",
+        osi: "Web platform",
+        title: "DOM events run user code",
+        text: "Pointer and mouse events travel capture, target, and bubble phases. JavaScript may prevent navigation, mutate state, log analytics, or let default navigation continue.",
+        events: ["pointerdown / pointerup dispatch", "click event bubbles", "Default action schedules navigation"]
+      },
+      {
+        lane: "browser",
+        node: "URL parser",
+        osi: "Application",
+        title: "The browser resolves the URL",
+        text: "The href is parsed against the document base URL. The browser normalizes scheme, host, port, path, query, fragment, origin, and security context.",
+        events: ["Relative URL becomes absolute", "Origin and site are computed", "Navigation request object created"]
+      },
+      {
+        lane: "browser",
+        node: "Cache policy",
+        osi: "Application",
+        title: "Caches get first refusal",
+        text: "Before touching the network, the browser checks HTTP cache, service workers, HSTS state, cookies, permissions, preconnects, and partitioned storage policy.",
+        events: ["Service worker may intercept", "HTTP cache freshness checked", "HSTS upgrades http to https"]
+      },
+      {
+        lane: "network",
+        node: "DNS resolver",
+        osi: "OSI L7/L3 bridge",
+        title: "DNS turns names into addresses",
+        text: "The stub resolver checks local caches, then asks a recursive resolver. The answer may involve CNAMEs, authoritative servers, DNSSEC, DoH/DoT, and TTLs.",
+        events: ["Host cache lookup", "Recursive resolver query", "A / AAAA records returned"]
+      },
+      {
+        lane: "network",
+        node: "Socket API",
+        osi: "OSI L4",
+        title: "The OS opens a socket",
+        text: "The browser asks the OS network stack to connect. Routing tables, source address selection, firewall rules, NAT state, and ephemeral ports enter the story.",
+        events: ["connect() chooses destination", "Route lookup selects interface", "Ephemeral source port allocated"]
+      },
+      {
+        lane: "network",
+        node: "TCP + TLS",
+        osi: "OSI L4-L6",
+        title: "Transport and crypto establish trust",
+        text: "TCP performs a handshake unless an existing connection is reused. TLS authenticates the server, negotiates keys, and protects HTTP bytes in transit.",
+        events: ["SYN / SYN-ACK / ACK or QUIC path", "Certificate chain validated", "Session keys derived"]
+      },
+      {
+        lane: "network",
+        node: "HTTP",
+        osi: "OSI L7",
+        title: "HTTP frames the request",
+        text: "The browser emits method, path, headers, cookies, content negotiation, and priority information. HTTP/2 and HTTP/3 multiplex many streams over one connection.",
+        events: ["GET /articles/open-stack", "Headers compressed", "Stream priority assigned"]
+      },
+      {
+        lane: "internet",
+        node: "NIC / Wi-Fi",
+        osi: "OSI L1-L2",
+        title: "Packets become frames",
+        text: "IP packets are wrapped in Ethernet or Wi-Fi frames. The NIC handles checksums, queues, offloads, encryption at lower layers, and radio or copper transmission.",
+        events: ["ARP / neighbor discovery may run", "Frame queued to NIC", "Bits leave the device"]
+      },
+      {
+        lane: "internet",
+        node: "Routers",
+        osi: "OSI L3",
+        title: "Routers forward across networks",
+        text: "Each hop decrements TTL, rewrites link-layer envelopes, and forwards toward the prefix. BGP policy, peering, congestion, and failures shape the path.",
+        events: ["Default gateway receives frame", "IP lookup picks next hop", "Transit networks carry packets"]
+      },
+      {
+        lane: "internet",
+        node: "Edge / CDN",
+        osi: "Edge platform",
+        title: "The edge may answer nearby",
+        text: "A CDN or reverse proxy can terminate TLS, enforce WAF rules, serve cached assets, compress responses, and route dynamic requests to an origin service.",
+        events: ["SNI and ALPN guide handling", "Cache key is evaluated", "Miss forwards to origin"]
+      },
+      {
+        lane: "internet",
+        node: "App server",
+        osi: "Application runtime",
+        title: "Application code produces bytes",
+        text: "The server route runs framework code, queries storage, checks auth, renders HTML or JSON, and emits observability signals for operators and maintainers.",
+        events: ["Router matches path", "Database/cache may be queried", "Template or API response generated"]
+      },
+      {
+        lane: "return",
+        node: "Response",
+        osi: "HTTP response",
+        title: "The response travels back",
+        text: "Status, headers, and body stream back through TLS, TCP congestion control, routers, the local network, the kernel, and browser network service.",
+        events: ["200 OK or redirect received", "Content-Type drives pipeline", "Cache metadata stored"]
+      },
+      {
+        lane: "return",
+        node: "HTML parser",
+        osi: "Browser engine",
+        title: "Bytes become a document",
+        text: "The parser tokenizes HTML, builds DOM nodes, discovers subresources, and may pause for blocking scripts. Preload scanners try to hide latency.",
+        events: ["Tokenizer emits tags", "DOM tree mutates", "Images/scripts/styles discovered"]
+      },
+      {
+        lane: "return",
+        node: "CSS / JS",
+        osi: "Runtime engine",
+        title: "Style and script shape behavior",
+        text: "CSS becomes CSSOM; JS runs in an engine with JIT, GC, promises, tasks, and microtasks. Layout computes boxes and constraints.",
+        events: ["CSS cascade resolved", "JS task queue advances", "Layout and paint invalidations tracked"]
+      },
+      {
+        lane: "return",
+        node: "GPU",
+        osi: "Presentation",
+        title: "Pixels land on the display",
+        text: "Paint records become layers, raster tiles, GPU commands, and composited frames. The display controller scans out pixels at refresh cadence.",
+        events: ["Display list rasterized", "Compositor submits frame", "New page appears"]
+      },
+      {
+        lane: "return",
+        node: "GPU",
+        osi: "Open source",
+        title: "Every layer has a door in",
+        text: "The same path crosses open specifications, open kernels, open browsers, open protocols, open server stacks, tooling, docs, tests, and community review.",
+        events: ["Fix a driver or docs typo", "Improve a browser test", "Patch a protocol library"]
+      }
+    ];
+
+    const openSourceGuides = [
+      {
+        project: "TinyUSB",
+        url: "https://github.com/hathach/tinyusb",
+        ideas: ["Add HID examples for unusual pointing devices", "Improve debounce and low-power test coverage", "Document USB report descriptors with real traces"]
+      },
+      {
+        project: "TinyUSB HID",
+        url: "https://docs.tinyusb.org/en/latest/",
+        ideas: ["Write clearer HID mouse firmware guides", "Add conformance tests for button and wheel reports", "Improve examples for composite USB devices"]
+      },
+      {
+        project: "Linux USB host stack",
+        url: "https://www.kernel.org/doc/html/latest/driver-api/usb/index.html",
+        ideas: ["Reproduce hardware quirks with usbmon traces", "Improve xHCI diagnostics around failed transfers", "Patch docs for driver authors and debugging"]
+      },
+      {
+        project: "Linux kernel IRQ handling",
+        url: "https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/",
+        ideas: ["Improve tracing around interrupt latency", "Add regression tests for driver interrupt paths", "Document hardirq versus threaded IRQ tradeoffs"]
+      },
+      {
+        project: "Linux HID subsystem",
+        url: "https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/hid",
+        ideas: ["Add support for a quirky HID descriptor", "Improve parser warnings for malformed reports", "Write docs that map HID usages to input events"]
+      },
+      {
+        project: "libinput",
+        url: "https://wayland.freedesktop.org/libinput/doc/latest/index.html",
+        ideas: ["Improve device-specific pointer behavior", "Add reproducible input-event test fixtures", "Refine docs for debugging user reports"]
+      },
+      {
+        project: "Linux scheduler",
+        url: "https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/kernel/sched",
+        ideas: ["Improve scheduler tracing examples", "Benchmark latency under desktop input load", "Write docs explaining wakeups for app developers"]
+      },
+      {
+        project: "Chromium compositor",
+        url: "https://chromium.googlesource.com/chromium/src/",
+        ideas: ["Add hit-test regression cases", "Improve layer-tree debug tooling", "Optimize latency between input and compositor frames"]
+      },
+      {
+        project: "WHATWG HTML",
+        url: "https://github.com/whatwg/html",
+        ideas: ["Clarify event dispatch edge cases", "Improve web-platform-tests for click behavior", "File interoperable issues with reduced test cases"]
+      },
+      {
+        project: "WHATWG URL",
+        url: "https://github.com/whatwg/url",
+        ideas: ["Add tricky URL parser test cases", "Clarify percent-encoding language", "Compare browser behavior and report spec mismatches"]
+      },
+      {
+        project: "Chromium network service",
+        url: "https://chromium.googlesource.com/chromium/src/+/main/net/",
+        ideas: ["Improve cache debugging surfaces", "Add tests for service-worker/cache interaction", "Document partitioned storage behavior"]
+      },
+      {
+        project: "Unbound DNS resolver",
+        url: "https://nlnetlabs.nl/projects/unbound/about/",
+        ideas: ["Improve DNSSEC error messages", "Add tests for cache and TTL edge cases", "Write operator docs for DoT and DoH deployments"]
+      },
+      {
+        project: "Linux networking stack",
+        url: "https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/net",
+        ideas: ["Add selftests for socket edge cases", "Improve route lookup observability", "Document NAT and namespace debugging patterns"]
+      },
+      {
+        project: "OpenSSL",
+        url: "https://github.com/openssl/openssl",
+        ideas: ["Improve TLS handshake diagnostics", "Add negative tests for certificate validation", "Harden docs around cipher and protocol choices"]
+      },
+      {
+        project: "Chromium HTTP stack",
+        url: "https://chromium.googlesource.com/chromium/src/+/main/net/http/",
+        ideas: ["Add HTTP/2 or HTTP/3 interop tests", "Improve request-priority debugging", "Document browser header generation paths"]
+      },
+      {
+        project: "Linux wireless and NIC drivers",
+        url: "https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/net",
+        ideas: ["Submit device-specific driver fixes", "Improve ethtool and tracepoint docs", "Add tests for offload and checksum behavior"]
+      },
+      {
+        project: "FRRouting",
+        url: "https://frrouting.org/",
+        ideas: ["Add BGP policy test scenarios", "Improve route debugging commands", "Patch docs for route convergence and failure modes"]
+      },
+      {
+        project: "Envoy Proxy",
+        url: "https://www.envoyproxy.io/",
+        ideas: ["Improve access-log examples", "Add tests for cache and routing filters", "Document TLS termination and retry behavior"]
+      },
+      {
+        project: "Node.js",
+        url: "https://github.com/nodejs/node",
+        ideas: ["Improve HTTP server observability", "Add regression tests for stream backpressure", "Clarify docs for async runtime behavior"]
+      },
+      {
+        project: "curl",
+        url: "https://github.com/curl/curl",
+        ideas: ["Add protocol test fixtures", "Improve error messages for redirects and TLS", "Document response-header debugging workflows"]
+      },
+      {
+        project: "WHATWG HTML parser",
+        url: "https://html.spec.whatwg.org/",
+        ideas: ["Write parser tests for malformed markup", "Clarify blocking script interactions", "Compare browser parser differences with small cases"]
+      },
+      {
+        project: "V8 JavaScript engine",
+        url: "https://v8.dev/docs/source-code",
+        ideas: ["Add reduced JS engine regression tests", "Improve diagnostics for performance cliffs", "Work on docs for GC, JIT, and WebAssembly internals"]
+      },
+      {
+        project: "Mesa 3D Graphics Library",
+        url: "https://mesa3d.org/",
+        ideas: ["Improve driver-specific rendering tests", "Add shader compiler regression cases", "Patch docs for GPU debugging workflows"]
+      },
+      {
+        project: "Open Source Guides",
+        url: "https://opensource.guide/how-to-contribute/",
+        ideas: ["Turn one trace into a reproducible bug", "Contribute docs before code when context is new", "Pick the layer where your curiosity already has traction"]
+      }
+    ];
+
+    const layerEl = document.querySelector("#layers");
+    const ticksEl = document.querySelector("#ticks");
+    const packetEl = document.querySelector("#packet");
+    const explainEl = document.querySelector("#explain");
+    const readoutTitle = document.querySelector("#readoutTitle");
+    const readoutMeta = document.querySelector("#readoutMeta");
+    const explainTitle = document.querySelector("#explainTitle");
+    const explainText = document.querySelector("#explainText");
+    const eventList = document.querySelector("#eventList");
+    const ideaList = document.querySelector("#ideaList");
+    const projectLink = document.querySelector("#projectLink");
+    const projectName = document.querySelector("#projectName");
+    const badge = document.querySelector("#badge");
+    const osiBadge = document.querySelector("#osiBadge");
+    const railFill = document.querySelector("#railFill");
+    const closing = document.querySelector("#closing");
+    const playIcon = document.querySelector("#playIcon");
+    const speedRange = document.querySelector("#speedRange");
+    const mouseVisual = document.querySelector("#mouseVisual");
+
+    let current = -1;
+    let playing = false;
+    let timer = 0;
+    const nodeIndex = new Map();
+
+    function iconPause() {
+      playIcon.innerHTML = '<path d="M8 5v14"></path><path d="M16 5v14"></path>';
+    }
+
+    function iconPlay() {
+      playIcon.innerHTML = '<path d="M8 5v14l11-7z"></path>';
+    }
+
+    function renderLanes() {
+      lanes.forEach((lane) => {
+        const laneNode = document.createElement("section");
+        laneNode.className = "lane";
+        laneNode.dataset.lane = lane.id;
+        laneNode.style.setProperty("--lane-color", lane.color);
+        laneNode.innerHTML = `<h3><span></span>${lane.title}</h3><div class="node-stack"></div>`;
+        const stack = laneNode.querySelector(".node-stack");
+        lane.nodes.forEach(([name, meta]) => {
+          const node = document.createElement("button");
+          node.type = "button";
+          node.className = "node";
+          node.dataset.node = name;
+          node.setAttribute("aria-label", `${name}: ${meta}`);
+          node.innerHTML = `<b>${name}</b><span>${meta}</span>`;
+          node.addEventListener("click", () => {
+            const idx = steps.findIndex((step) => step.lane === lane.id && step.node === name);
+            if (idx >= 0) showStep(idx, true);
+          });
+          stack.append(node);
+          nodeIndex.set(`${lane.id}:${name}`, node);
+        });
+        layerEl.append(laneNode);
+      });
+    }
+
+    function renderTicks() {
+      steps.forEach((step, idx) => {
+        const lane = lanes.find((item) => item.id === step.lane);
+        const tick = document.createElement("button");
+        tick.type = "button";
+        tick.className = "tick";
+        tick.style.setProperty("--accent", lane.color);
+        tick.innerHTML = `<b>${String(idx + 1).padStart(2, "0")} ${step.node}</b><span>${step.osi}</span>`;
+        tick.addEventListener("click", () => showStep(idx, true));
+        ticksEl.append(tick);
+      });
+    }
+
+    function locateNode(node) {
+      const mapBox = document.querySelector("#map").getBoundingClientRect();
+      const box = node.getBoundingClientRect();
+      const centerX = ((box.left + box.width / 2 - mapBox.left) / mapBox.width) * 100;
+      const centerY = ((box.top + box.height / 2 - mapBox.top) / mapBox.height) * 100;
+      const opensUp = centerY > 54;
+      return {
+        x: centerX,
+        y: centerY,
+        popX: Math.min(80, Math.max(20, centerX)),
+        popY: opensUp ? Math.max(28, centerY - 22) : Math.min(70, centerY + 23)
+      };
+    }
+
+    function clearTimer() {
+      window.clearTimeout(timer);
+      timer = 0;
+    }
+
+    function setPlaying(next) {
+      playing = next;
+      if (playing) {
+        iconPause();
+        scheduleNext();
+      } else {
+        iconPlay();
+        clearTimer();
+      }
+    }
+
+    function scheduleNext() {
+      clearTimer();
+      if (!playing) return;
+      timer = window.setTimeout(() => {
+        if (current >= steps.length - 1) {
+          setPlaying(false);
+          return;
+        }
+        showStep(current + 1);
+        scheduleNext();
+      }, Number(speedRange.value));
+    }
+
+    function showStep(index, pauseAfter = false) {
+      if (index < 0) index = 0;
+      if (index > steps.length - 1) index = steps.length - 1;
+      current = index;
+
+      const step = steps[index];
+      const guide = openSourceGuides[index];
+      const lane = lanes.find((item) => item.id === step.lane);
+      const node = nodeIndex.get(`${step.lane}:${step.node}`);
+      const pos = locateNode(node);
+
+      document.querySelectorAll(".lane").forEach((el) => {
+        el.classList.toggle("is-live", el.dataset.lane === step.lane);
+      });
+      document.querySelectorAll(".node").forEach((el) => el.classList.remove("is-active"));
+      node.classList.add("is-active");
+      document.querySelectorAll(".tick").forEach((el, idx) => {
+        el.classList.toggle("is-current", idx === index);
+      });
+
+      packetEl.style.setProperty("--x", `${pos.x}%`);
+      packetEl.style.setProperty("--y", `${pos.y}%`);
+      packetEl.style.background = lane.color;
+      packetEl.style.boxShadow = `0 0 0 7px color-mix(in srgb, ${lane.color} 22%, transparent), 0 0 28px ${lane.color}`;
+      packetEl.classList.remove("is-live");
+      void packetEl.offsetWidth;
+      packetEl.classList.add("is-live");
+
+      explainEl.style.setProperty("--pop-x", `${pos.popX}%`);
+      explainEl.style.setProperty("--pop-y", `${pos.popY}%`);
+      explainEl.style.setProperty("--accent", lane.color);
+      badge.textContent = `step ${String(index + 1).padStart(2, "0")}`;
+      osiBadge.textContent = step.osi;
+      explainTitle.textContent = step.title;
+      explainText.textContent = step.text;
+      eventList.replaceChildren(...step.events.map((event) => {
+        const li = document.createElement("li");
+        li.textContent = event;
+        return li;
+      }));
+      projectLink.href = guide.url;
+      projectName.textContent = guide.project;
+      ideaList.replaceChildren(...guide.ideas.map((idea) => {
+        const li = document.createElement("li");
+        li.textContent = idea;
+        return li;
+      }));
+      explainEl.classList.remove("is-live");
+      void explainEl.offsetWidth;
+      explainEl.classList.add("is-live");
+
+      readoutTitle.textContent = step.title;
+      readoutMeta.textContent = `${lane.title} -> ${step.node} -> ${step.osi}`;
+      railFill.style.setProperty("--progress", `${((index + 1) / steps.length) * 100}%`);
+
+      if (index < 3) {
+        mouseVisual.animate([
+          { transform: "rotate(0deg) translateY(0)" },
+          { transform: "rotate(-1deg) translateY(6px)" },
+          { transform: "rotate(0deg) translateY(0)" }
+        ], { duration: 360, easing: "cubic-bezier(.2,1.5,.2,1)" });
+      }
+
+      closing.classList.toggle("is-visible", index === steps.length - 1);
+      if (pauseAfter) setPlaying(false);
+    }
+
+    function startJourney() {
+      closing.classList.remove("is-visible");
+      showStep(0);
+      setPlaying(true);
+    }
+
+    document.querySelector("#demoLink").addEventListener("click", startJourney);
+    document.querySelector("#startBtn").addEventListener("click", startJourney);
+    document.querySelector("#playBtn").addEventListener("click", () => {
+      if (current < 0) showStep(0);
+      setPlaying(!playing);
+    });
+    document.querySelector("#nextBtn").addEventListener("click", () => showStep(current + 1, true));
+    document.querySelector("#prevBtn").addEventListener("click", () => showStep(current - 1, true));
+    document.querySelector("#resetBtn").addEventListener("click", () => {
+      setPlaying(false);
+      current = -1;
+      document.querySelectorAll(".lane, .node, .tick").forEach((el) => el.classList.remove("is-live", "is-active", "is-current"));
+      packetEl.classList.remove("is-live");
+      explainEl.classList.remove("is-live");
+      railFill.style.setProperty("--progress", "0%");
+      readoutTitle.textContent = "Ready at the link";
+      readoutMeta.textContent = "Click the link to emit the first input event.";
+      closing.classList.remove("is-visible");
+    });
+    document.querySelector("#allBtn").addEventListener("click", () => {
+      setPlaying(false);
+      document.querySelectorAll(".lane").forEach((el) => el.classList.add("is-live"));
+      explainEl.classList.remove("is-live");
+      readoutTitle.textContent = "Full stack component map";
+      readoutMeta.textContent = "Click any component or timeline tick to inspect the path.";
+    });
+    speedRange.addEventListener("input", () => {
+      if (playing) scheduleNext();
+    });
+
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowRight") showStep(current + 1, true);
+      if (event.key === "ArrowLeft") showStep(current - 1, true);
+      if (event.key === " ") {
+        event.preventDefault();
+        if (current < 0) showStep(0);
+        setPlaying(!playing);
+      }
+    });
+
+    renderLanes();
+    renderTicks();
+  </script>
+</body>
+</html>
